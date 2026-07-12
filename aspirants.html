@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Find Your Mentor — Bridgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root{ --navy:#0B1026; --blue:#4C7FDB; --blue-light:#8FB8F5; --blue-deep:#2C4E9E; --ink:#0B1026; --muted:#5B6480; --bg:#FAFAFC; --card:#FFFFFF; --line:#ECEBF4; --green:#25D366; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{ font-family:'Inter', sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:500; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 20px; }
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  header{ position:fixed; top:0; left:0; right:0; z-index:50; padding:16px 0; background:rgba(250,250,252,0.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  nav{ display:flex; align-items:center; justify-content:space-between; }
+  .logo{ display:flex; align-items:center; gap:8px; }
+  .logo img{ height:28px; border-radius:6px; }
+  .logo span{ font-family:'Fraunces'; font-size:19px; color:var(--ink); }
+  .nav-links{ display:none; gap:30px; }
+  .nav-links a{ color:var(--ink); font-size:14px; }
+  .menu-btn{ background:none; border:none; font-size:20px; cursor:pointer; color:var(--ink); }
+  .mobile-menu{ display:none; flex-direction:column; gap:14px; padding:14px 20px 18px; background:#fff; border-bottom:1px solid var(--line); }
+  .mobile-menu.open{ display:flex; }
+  .mobile-menu a{ font-size:15px; color:var(--ink); }
+
+  .btn{ display:inline-block; text-align:center; padding:14px 24px; border-radius:12px; font-weight:600; font-size:14.5px; cursor:pointer; border:none; transition:all .2s ease; }
+  .btn-primary{ background:var(--blue); color:#fff; box-shadow:0 10px 24px rgba(47,111,237,0.35); }
+  .btn-primary:hover{ background:var(--blue-light); transform:translateY(-2px); }
+  .btn-ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--blue); transform:translateY(-2px); }
+  .btn-row{ display:flex; flex-direction:column; gap:12px; max-width:320px; margin:0 auto; }
+
+  .a-hero{ position:relative; padding:120px 0 60px; overflow:hidden; background:radial-gradient(ellipse at 50% 0%, rgba(47,111,237,0.1), transparent 60%), linear-gradient(180deg, #EAF2FF 0%, #FAFAFC 100%); }
+  .a-hero-inner{ position:relative; z-index:2; text-align:center; }
+  .a-hero h1{ font-size:clamp(26px,6vw,40px); line-height:1.24; max-width:620px; margin:0 auto 18px; }
+  .a-hero p.sub{ color:var(--muted); font-size:15px; max-width:460px; margin:0 auto 30px; line-height:1.65; }
+  .curve{ position:absolute; opacity:0.5; }
+
+  .section{ padding:64px 0; }
+  .section-head{ margin-bottom:28px; }
+  .section-head .kicker{ color:var(--blue); font-size:22px; font-weight:600; font-family:'Fraunces'; position:relative; display:inline-block; margin-bottom:6px; }
+  .section-head .kicker::after{ content:''; position:absolute; left:0; bottom:-6px; width:46px; height:3px; background:var(--blue-light); border-radius:2px; }
+  .section-head p{ color:var(--muted); font-size:14px; margin-top:14px; max-width:440px; }
+
+  .highlight-strip{ background:linear-gradient(135deg, #EAF2FF, #F5F9FF); border:1px solid #DCE9FF; border-radius:18px; padding:20px 22px; display:flex; align-items:center; gap:14px; margin:0 auto 40px; max-width:700px; }
+  .highlight-strip .ico{ font-size:26px; }
+  .highlight-strip p{ font-size:14px; color:var(--ink); font-weight:500; line-height:1.5; }
+  .highlight-strip b{ color:var(--blue); }
+
+  .why-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .why-card{ background:linear-gradient(160deg, #EAF2FF, #ffffff 60%); border:1px solid var(--line); border-radius:16px; padding:20px; text-align:center; transition:transform .25s ease; }
+  .why-card:hover{ transform:translateY(-4px); }
+  .why-card .emoji{ font-size:26px; margin-bottom:10px; }
+  .why-card p{ font-size:13px; color:var(--ink); font-weight:500; }
+  .why-close{ text-align:center; margin-top:28px; font-family:'Fraunces'; font-size:19px; color:var(--blue); }
+
+  .grid-cards{ display:grid; grid-template-columns:1fr; gap:16px; }
+  .gcard{ background:linear-gradient(160deg, #F5F9FF, #ffffff 55%); border:1px solid var(--line); border-radius:18px; padding:22px; transition:transform .25s ease, box-shadow .25s ease; }
+  .gcard:hover{ transform:translateY(-4px); box-shadow:0 14px 30px rgba(11,16,38,0.06); }
+  .gcard .icon{ width:42px; height:42px; border-radius:12px; margin-bottom:14px; display:flex; align-items:center; justify-content:center; background:#EAF2FF; color:var(--blue); }
+  .gcard h4{ font-family:'Inter'; font-weight:600; font-size:15.5px; margin-bottom:6px; }
+  .gcard p{ color:var(--muted); font-size:13.5px; line-height:1.55; }
+
+  .timeline{ display:flex; flex-direction:column; gap:0; }
+  .tstep{ display:flex; gap:16px; padding-bottom:8px; position:relative; align-items:flex-start; }
+  .tstep .num{ width:40px; height:40px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg, var(--blue-light), var(--blue-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; z-index:1; }
+  .tstep .body{ padding-top:6px; }
+  .tstep h4{ font-size:14.5px; font-weight:600; margin-bottom:3px; }
+  .tstep p{ font-size:13px; color:var(--muted); }
+  .tarrow{ display:flex; justify-content:center; padding:2px 0 2px 19px; color:var(--blue-light); font-size:18px; }
+  .tarrow svg{ width:16px; height:22px; }
+
+  .mentor-grid{ display:grid; grid-template-columns:1fr; gap:16px; }
+  .mcard{ background:var(--card); border:1px solid var(--line); border-radius:18px; padding:20px; }
+  .mcard .avatar{ width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg,#EAF2FF,#DCEBFF); color:var(--blue); display:flex; align-items:center; justify-content:center; font-family:'Fraunces'; font-weight:600; margin-bottom:12px; }
+  .mcard h4{ font-size:15px; font-weight:600; margin-bottom:2px; }
+  .mcard .meta{ font-size:12.5px; color:var(--muted); margin-bottom:8px; }
+  .mcard .verified{ display:inline-flex; align-items:center; gap:5px; font-size:12px; color:#1F9D64; font-weight:600; }
+
+  .college-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-top:8px; }
+  .college{ display:flex; flex-direction:column; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 8px; text-align:center; }
+  .college .badge{ width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg, #EAF2FF, #DCEBFF); display:flex; align-items:center; justify-content:center; font-family:'Fraunces'; font-weight:600; color:var(--blue); font-size:13px; box-shadow:0 0 0 3px #fff, 0 0 0 4.5px var(--line); }
+  .college span{ font-size:12px; color:var(--muted); line-height:1.3; }
+
+  .faq-item{ border-bottom:1px solid var(--line); padding:18px 0; }
+  .faq-q{ display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-weight:600; font-size:14.5px; }
+  .faq-q .plus{ font-size:20px; color:var(--blue); transition:transform .25s ease; flex-shrink:0; margin-left:12px; }
+  .faq-item.open .faq-q .plus{ transform:rotate(45deg); }
+  .faq-a{ max-height:0; overflow:hidden; transition:max-height .3s ease; color:var(--muted); font-size:13.5px; line-height:1.6; }
+  .faq-item.open .faq-a{ max-height:220px; padding-top:10px; }
+
+  .cta-banner{ background:linear-gradient(135deg, #7FA3E0, #4C7FDB); border-radius:24px; padding:32px 24px; color:#fff; display:flex; flex-direction:column; gap:16px; align-items:flex-start; margin:0 20px 64px; }
+  .cta-banner h3{ font-size:20px; }
+  .cta-banner p{ color:#E3EEFF; font-size:14px; }
+  .cta-banner .btn-ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,0.6); }
+  .cta-banner .btn-ghost:hover{ background:rgba(255,255,255,0.1); }
+  .cta-options{ display:flex; flex-direction:column; gap:10px; width:100%; }
+
+  footer{ background:var(--navy); color:#8A92BE; padding:32px 0; text-align:center; font-size:12px; }
+  footer img{ height:32px; margin:0 auto 10px; border-radius:6px; }
+  footer .flinks{ display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-top:12px; }
+  footer .flinks a{ color:#B9C0E8; }
+  .wa-float{ position:fixed; bottom:22px; right:22px; z-index:40; width:52px; height:52px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 24px rgba(37,211,102,0.4); }
+
+  @media(min-width:760px){
+    .nav-links{ display:flex; } .menu-btn{ display:none; }
+    .btn-row{ flex-direction:row; max-width:none; justify-content:center; }
+    .why-grid{ grid-template-columns:repeat(4,1fr); }
+    .grid-cards{ grid-template-columns:repeat(3,1fr); }
+    .mentor-grid{ grid-template-columns:repeat(3,1fr); }
+    .college-grid{ grid-template-columns:repeat(7,1fr); }
+    .timeline{ flex-direction:row; align-items:flex-start; }
+    .tstep{ flex-direction:column; align-items:center; text-align:center; flex:1; }
+    .tarrow{ align-items:center; padding:18px 0 0; }
+    .tarrow svg{ transform:rotate(-90deg); width:22px; height:16px; }
+    .cta-banner{ flex-direction:row; align-items:center; justify-content:space-between; margin:0 auto 80px; max-width:1100px; }
+    .cta-options{ flex-direction:row; width:auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="index.html" class="logo"><img src="logo.png" alt="Bridgr"><span>Bridgr</span></a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="aspirants.html">Aspirants</a>
+        <a href="mentor.html">Mentors</a>
+        <a href="about.html">About Us</a>
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    </nav>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="aspirants.html">Aspirants</a>
+    <a href="mentor.html">Mentors</a>
+    <a href="about.html">About Us</a>
+  </div>
+</header>
+
+<section class="a-hero">
+  <svg class="curve" width="500" height="200" style="top:60px; left:-80px;" viewBox="0 0 500 200"><path d="M0 150 C 100 80, 250 80, 350 150" stroke="#2F6FED" stroke-width="2" fill="none"/></svg>
+  <svg class="curve" width="400" height="180" style="bottom:0; right:-100px;" viewBox="0 0 400 180"><path d="M0 120 C 100 60, 250 60, 400 120" stroke="#6FB1FF" stroke-width="2" fill="none"/></svg>
+  <div class="wrap a-hero-inner">
+    <h1 class="reveal in">You're not choosing a college.<br/>You're choosing the next 5½ years of your life.</h1>
+    <p class="sub reveal in">Talk to verified MBBS students from colleges across India before making one of the biggest decisions of your life.</p>
+    <div class="btn-row reveal in">
+      <a class="btn btn-primary" href="form.html">Find My Mentor</a>
+      <button class="btn btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How Bridgr Works</button>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal in" style="text-align:center; display:block;">
+      <p class="kicker" style="display:inline-block;">Why Bridgr?</p>
+      <h2 style="font-size:22px; margin-top:6px;">Why thousands of aspirants feel lost during counselling</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal in"><div class="emoji">🏥</div><p>Too many colleges to compare</p></div>
+      <div class="why-card reveal in"><div class="emoji">📋</div><p>Confusing counselling process</p></div>
+      <div class="why-card reveal in"><div class="emoji">🤷</div><p>No honest student opinions</p></div>
+      <div class="why-card reveal in"><div class="emoji">😟</div><p>Fear of making the wrong choice</p></div>
+    </div>
+    <p class="why-close reveal in">That's exactly why Bridgr exists.</p>
+  </div>
+</section>
+
+<section class="section" style="background:#fff;">
+  <div class="wrap">
+    <div class="section-head reveal in">
+      <p class="kicker">What You Get</p>
+      <p>Support that goes far beyond a single counselling call.</p>
+    </div>
+    <div class="highlight-strip reveal in" style="margin:0 0 28px;">
+      <span class="ico">🎁</span>
+      <p>Every aspirant gets <b>3 free counselling sessions</b> plus <b>1 free 1-on-1 session</b> with a senior from the college of their choice.</p>
+    </div>
+    <div class="grid-cards">
+      <div class="gcard reveal in"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21C7 17 2 13.5 2 9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-5 8-9 12Z"/></svg></div><h4>College Selection Guidance</h4><p>Compare colleges based on what actually matters, not just rankings.</p></div>
+      <div class="gcard reveal in"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg></div><h4>Counselling Support</h4><p>Understand seat allotment, choice filling, and documents without panic.</p></div>
+      <div class="gcard reveal in"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/></svg></div><h4>Real Campus Life</h4><p>Honest answers about hostels, faculty, and day-to-day college life.</p></div>
+      <div class="gcard reveal in"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-6 9 6v11a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg></div><h4>Hostel &amp; Academics</h4><p>What to expect in your first year, and how to settle in quickly.</p></div>
+      <div class="gcard reveal in"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div><h4>Internship &amp; Future Planning</h4><p>Early clarity on internships, NEET PG, and career paths ahead.</p></div>
+      <div class="gcard reveal in"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></div><h4>Ongoing Mentorship</h4><p>Your mentor stays reachable well after admission, not just before.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-head reveal in">
+      <p class="kicker">How It Works</p>
+      <p>Five simple steps from confusion to clarity.</p>
+    </div>
+    <div class="timeline">
+      <div class="tstep reveal in"><div class="num">1</div><div class="body"><h4>Fill Aspirant Form</h4><p>Tell us a little about yourself.</p></div></div>
+      <div class="tarrow"><svg viewBox="0 0 16 22" fill="none"><path d="M8 0v18M2 14l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="tstep reveal in"><div class="num">2</div><div class="body"><h4>Share Preferences</h4><p>Colleges, states, and what you need help with.</p></div></div>
+      <div class="tarrow"><svg viewBox="0 0 16 22" fill="none"><path d="M8 0v18M2 14l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="tstep reveal in"><div class="num">3</div><div class="body"><h4>We Match You</h4><p>Manually matched with the right senior.</p></div></div>
+      <div class="tarrow"><svg viewBox="0 0 16 22" fill="none"><path d="M8 0v18M2 14l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="tstep reveal in"><div class="num">4</div><div class="body"><h4>Connect on WhatsApp</h4><p>Start talking to your mentor directly.</p></div></div>
+      <div class="tarrow"><svg viewBox="0 0 16 22" fill="none"><path d="M8 0v18M2 14l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="tstep reveal in"><div class="num">5</div><div class="body"><h4>Ask Anytime</h4><p>Stay connected throughout your journey.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:#fff;">
+  <div class="wrap">
+    <div class="section-head reveal in">
+      <p class="kicker">Who Will You Talk To?</p>
+      <p>A glimpse of the seniors ready to guide you. Sample profiles — real mentors are matched after you apply.</p>
+    </div>
+    <div class="mentor-grid">
+      <div class="mcard reveal in"><div class="avatar">V</div><h4>Vishal</h4><p class="meta">BMCRI • 2nd Year</p><span class="verified">✔ Verified Mentor</span></div>
+      <div class="mcard reveal in"><div class="avatar">D</div><h4>Daivik</h4><p class="meta">AIIMS Bhopal • 1st Year</p><span class="verified">✔ Verified Mentor</span></div>
+      <div class="mcard reveal in"><div class="avatar">R</div><h4>Raksha</h4><p class="meta">KMC Mangalore • 2nd Year</p><span class="verified">✔ Verified Mentor</span></div>
+      <div class="mcard reveal in"><div class="avatar">N</div><h4>Naithik Jain</h4><p class="meta">BMCRI • 2nd Year</p><span class="verified">✔ Verified Mentor</span></div>
+      <div class="mcard reveal in"><div class="avatar">M</div><h4>Megha GK</h4><p class="meta">BMCRI • 1st Year</p><span class="verified">✔ Verified Mentor</span></div>
+      <div class="mcard reveal in"><div class="avatar">S</div><h4>Shubham Chavan</h4><p class="meta">KMCRI (earlier KIMS) • 2nd Year</p><span class="verified">✔ Verified Mentor</span></div>
+      <div class="mcard reveal in"><div class="avatar">S</div><h4>Shreya Chanshetty</h4><p class="meta">KMCRI (earlier KIMS) • 2nd Year</p><span class="verified">✔ Verified Mentor</span></div>
+      <div class="mcard reveal in"><div class="avatar">J</div><h4>Janvi Hanjigi</h4><p class="meta">BIMS, Belagavi • 1st Year</p><span class="verified">✔ Verified Mentor</span></div>
+      <div class="mcard reveal in"><div class="avatar">S</div><h4>Sanika</h4><p class="meta">KoIMS • 2nd Year</p><span class="verified">✔ Verified Mentor</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap" style="text-align:center;">
+    <div class="section-head reveal in" style="display:inline-block; text-align:center;">
+      <p class="kicker" style="display:inline-block;">Colleges We Have Authentic Insight From</p>
+    </div>
+    <div class="college-grid">
+      <div class="college reveal in"><div class="badge">AB</div><span>AIIMS Bhopal</span></div>
+      <div class="college reveal in"><div class="badge">AM</div><span>AIIMS Mangalagiri</span></div>
+      <div class="college reveal in"><div class="badge">BM</div><span>BMCRI</span></div>
+      <div class="college reveal in"><div class="badge">KM</div><span>KMC</span></div>
+      <div class="college reveal in"><div class="badge">KH</div><span>KIMS Hubli</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq" style="background:#fff;">
+  <div class="wrap" style="max-width:700px;">
+    <div class="section-head reveal in"><p class="kicker">Frequently Asked</p></div>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q">Is Bridgr free?<span class="plus">+</span></div><div class="faq-a">Yes — Bridgr is completely free to use during our launch phase.</div></div>
+      <div class="faq-item"><div class="faq-q">How are mentors verified?<span class="plus">+</span></div><div class="faq-a">Every mentor submits a college ID or admission proof, reviewed manually before approval.</div></div>
+      <div class="faq-item"><div class="faq-q">Can I choose my mentor?<span class="plus">+</span></div><div class="faq-a">We match you based on your preferences. Requesting a specific mentor may be possible in future versions.</div></div>
+      <div class="faq-item"><div class="faq-q">Can I change my mentor?<span class="plus">+</span></div><div class="faq-a">Absolutely, yes. If you feel you're not a good fit with your mentor, you can definitely request the admin to change them.</div></div>
+      <div class="faq-item"><div class="faq-q">Can I ask multiple doubts?<span class="plus">+</span></div><div class="faq-a">Absolutely. Once connected, you can reach out to your mentor whenever you need to.</div></div>
+      <div class="faq-item"><div class="faq-q">Can parents join?<span class="plus">+</span></div><div class="faq-a">Bridgr is designed around the aspirant, but parents are welcome to be part of the conversation.</div></div>
+      <div class="faq-item"><div class="faq-q">How long can I stay connected?<span class="plus">+</span></div><div class="faq-a">You can stay connected based on the number of free sessions you have remaining. Paid sessions can continue even after admission — especially if your mentor is from the same college or you've genuinely connected with them — subject to your mentor's availability.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-banner reveal in">
+  <div><h3>Still confused?</h3><p>Let's find someone who's already lived your dream.</p></div>
+  <div class="cta-options">
+    <a class="btn btn-ghost" href="form.html">Find My Mentor</a>
+    <a class="btn btn-ghost" href="https://chat.whatsapp.com/FCxniqSXUYDHcK1VcQtfHZ?s=cl&p=a&mlu=4&amv=2" target="_blank" rel="noreferrer">Join WhatsApp Group</a>
+    <a class="btn btn-ghost" href="https://wa.me/919353777094" target="_blank" rel="noreferrer">Speak to Admin</a>
+  </div>
+</div>
+
+<footer id="footer">
+  <div class="wrap">
+    <img src="logo.png" alt="Bridgr">
+    <div class="flinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="https://wa.me/919353777094" target="_blank" rel="noreferrer">WhatsApp</a>
+    </div>
+    <p style="margin-top:16px;">© 2026 Bridgr. All rights reserved.</p>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/919353777094" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3.1.8.8-3-.2-.3A8 8 0 1 1 12 20Zm4.4-6c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-1.3-.6-2.1-1.1-2.9-2.5-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5C10.4 9 10 8 9.8 7.6c-.1-.4-.3-.3-.5-.3h-.4c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3Z"/></svg>
+</a>
+
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  document.querySelectorAll('.faq-q').forEach(q => q.addEventListener('click', () => q.parentElement.classList.toggle('open')));
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+</script>
+</body>
+</html>
