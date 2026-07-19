@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Join as a Mentor — Bridgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root{ --navy:#0B1026; --blue:#4C7FDB; --blue-light:#8FB8F5; --blue-deep:#2C4E9E; --ink:#0B1026; --muted:#5B6480; --bg:#FAFAFC; --card:#FFFFFF; --line:#ECEBF4; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ font-family:'Inter', sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  h1,h2{ font-family:'Fraunces', serif; font-weight:500; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 20px; }
+
+  .btn{ display:inline-block; text-align:center; padding:15px 24px; border-radius:12px; font-weight:600; font-size:15px; cursor:pointer; border:none; transition:all .2s ease; width:100%; }
+  .btn-primary{ background:linear-gradient(135deg, var(--blue), var(--blue-deep)); color:#fff; box-shadow:0 10px 24px rgba(47,111,237,0.35); }
+  .btn-primary:hover{ transform:translateY(-2px); }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+  .btn-ghost{ background:rgba(255,255,255,0.85); color:var(--ink); border:1.5px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--blue); }
+
+  .form-shell{ min-height:100vh; display:flex; flex-direction:column; position:relative; }
+  .scenery{ position:fixed; inset:0; z-index:0; }
+  .scenery svg{ width:100%; height:100%; }
+  .form-topbar, .form-body{ position:relative; z-index:1; }
+  .form-topbar{ position:sticky; top:0; z-index:30; background:rgba(250,250,252,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:14px 0; }
+  .form-progress-track{ height:7px; background:#E7E9F3; border-radius:999px; overflow:hidden; margin-top:10px; }
+  .form-progress-fill{ height:100%; background:linear-gradient(135deg, var(--blue), var(--blue-deep)); border-radius:999px; transition:width 700ms cubic-bezier(.4,0,.2,1); width:0%; }
+  .form-progress-label{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); font-weight:500; }
+  .form-progress-label b{ color:var(--ink); }
+
+  .form-body{ flex:1; display:flex; align-items:center; padding:40px 0 60px; }
+  .form-page{ display:none; width:100%; }
+  .form-page.active{ display:block; }
+  .form-card{ max-width:560px; margin:0 auto; padding:34px 26px; background:rgba(255,255,255,0.95); border-radius:24px; box-shadow:0 20px 50px rgba(11,16,38,0.08); }
+  .form-eyebrow{ font-size:13px; color:var(--blue); font-weight:700; margin-bottom:8px; letter-spacing:.02em; text-transform:uppercase; }
+  .form-h{ font-family:'Fraunces'; font-size:26px; color:var(--ink); margin-bottom:12px; line-height:1.3; }
+  .form-h.xl{ font-size:29px; }
+  .form-sub{ color:var(--muted); font-size:14.5px; line-height:1.6; margin-bottom:26px; }
+
+  .f-group{ margin-bottom:24px; }
+  .f-label{ display:block; font-size:14.5px; font-weight:700; color:var(--ink); margin-bottom:10px; }
+  .f-label.md{ font-size:13.5px; }
+  .f-label.sm{ font-size:12.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.02em; }
+  .f-label .req{ color:#E14B4B; }
+  .f-input, .f-select, .f-textarea{ width:100%; padding:15px 16px; border-radius:12px; border:1.5px solid var(--line); font-family:'Inter'; font-size:14.5px; color:var(--ink); background:#fff; }
+  .f-input:focus, .f-select:focus, .f-textarea:focus{ outline:none; border-color:var(--blue); box-shadow:0 0 0 4px rgba(47,111,237,0.12); }
+  .f-textarea{ resize:vertical; min-height:80px; }
+  .f-error{ font-size:12px; color:#E14B4B; margin-top:6px; display:none; }
+  .f-group.invalid .f-input, .f-group.invalid .f-select{ border-color:#E14B4B; }
+  .f-group.invalid .f-error{ display:block; }
+  .f-hint{ font-size:11.5px; color:var(--muted); margin-top:8px; }
+
+  .chip-grid{ display:flex; flex-wrap:wrap; gap:10px; }
+  .chip{ padding:10px 16px; border-radius:999px; border:1.5px solid var(--line); background:#fff; font-size:13px; font-weight:500; color:var(--ink); cursor:pointer; transition:all .2s ease; user-select:none; }
+  .chip.selected{ background:#EAF2FF; border-color:var(--blue); color:var(--blue); box-shadow:0 0 0 3px rgba(47,111,237,0.1); }
+
+  .option-cards{ display:flex; flex-direction:column; gap:10px; }
+  .opt-card{ display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:14px; border:1.5px solid var(--line); background:#fff; cursor:pointer; transition:all .2s ease; user-select:none; }
+  .opt-card.selected{ border-color:var(--blue); background:#F0F6FF; box-shadow:0 0 0 3px rgba(47,111,237,0.1); }
+  .opt-card .dot{ width:18px; height:18px; border-radius:50%; border:2px solid var(--line); flex-shrink:0; position:relative; }
+  .opt-card.selected .dot{ border-color:var(--blue); }
+  .opt-card.selected .dot::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:var(--blue); }
+  .opt-card .label{ font-size:14px; font-weight:500; }
+
+  .form-nav{ display:flex; gap:12px; margin-top:28px; }
+  .form-nav .btn-back{ flex:0 0 auto; padding:15px 20px; width:auto; }
+
+  .conditional{ overflow:hidden; max-height:0; transition:max-height .35s ease; }
+  .conditional.open{ max-height:220px; margin-top:14px; }
+
+  .scale-row{ display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:6px; }
+  .scale-dot{ width:38px; height:38px; border-radius:50%; border:1.5px solid var(--line); background:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:14px; cursor:pointer; }
+  .scale-dot.selected{ background:var(--blue); border-color:var(--blue); color:#fff; }
+  .scale-labels{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:6px; }
+
+  .loading-screen, .success-screen{ text-align:center; padding:10px 4px; }
+  .loading-dots{ display:flex; gap:6px; justify-content:center; margin-bottom:18px; }
+  .loading-dots span{ width:9px; height:9px; border-radius:50%; background:var(--blue); animation:ld 1.2s ease-in-out infinite; }
+  .loading-dots span:nth-child(2){ animation-delay:.15s; }
+  .loading-dots span:nth-child(3){ animation-delay:.3s; }
+  @keyframes ld{ 0%,80%,100%{ opacity:.25; transform:scale(.8);} 40%{ opacity:1; transform:scale(1);} }
+  .ref-id{ display:inline-block; margin:16px 0; padding:10px 20px; border-radius:12px; background:#EAF2FF; color:var(--blue); font-weight:700; letter-spacing:.03em; }
+  .bonus-banner{ background:linear-gradient(135deg,#EAF2FF,#E7F6EF); border:1px solid #D6E6FF; border-radius:16px; padding:16px; font-size:13px; color:var(--ink); line-height:1.6; margin:18px 0; text-align:left; }
+
+  .rescue-scene{ width:100%; max-width:320px; margin:0 auto 14px; border-radius:18px; overflow:hidden; box-shadow:0 12px 30px rgba(11,16,38,0.12); }
+
+  /* Stage 1 (0-15%): mentee dangling. Stage 2 (15-35%): mentor reaches. Stage 3 (35-55%): hands grip.
+     Stage 4 (55-82%): rise up the cliff face. Stage 5 (82-100%): stand together + sparkle. Total 5.5s. */
+  .r-mentee{ animation: rMentee 5.5s ease-in-out forwards; transform-origin: 130px 210px; }
+  @keyframes rMentee{
+    0%{ transform:translate(0,0) rotate(-4deg); }
+    12%{ transform:translate(-3px,4px) rotate(4deg); }
+    15%{ transform:translate(0,0) rotate(-2deg); }
+    35%{ transform:translate(0,0) rotate(0deg); }
+    55%{ transform:translate(6px,-10px) rotate(0deg); }
+    82%{ transform:translate(18px,-150px) rotate(0deg); }
+    100%{ transform:translate(18px,-150px) rotate(0deg); }
+  }
+  .r-mentorArm{ animation: rArm 5.5s ease-in-out forwards; transform-origin: 165px 95px; }
+  @keyframes rArm{
+    0%{ transform:rotate(0deg); }
+    15%{ transform:rotate(0deg); }
+    35%{ transform:rotate(38deg); }
+    55%{ transform:rotate(46deg); }
+    82%{ transform:rotate(10deg); }
+    100%{ transform:rotate(10deg); }
+  }
+  .r-mentor{ animation: rMentorLean 5.5s ease-in-out forwards; transform-origin: 165px 130px; }
+  @keyframes rMentorLean{
+    0%{ transform:translateY(0); }
+    15%{ transform:translateY(0); }
+    35%{ transform:translateY(6px); }
+    55%{ transform:translateY(8px); }
+    82%{ transform:translateY(0); }
+    100%{ transform:translateY(0); }
+  }
+  .r-sparkle{ opacity:0; animation: rSparkle 5.5s ease-in-out forwards; }
+  @keyframes rSparkle{
+    0%,80%{ opacity:0; transform:scale(0.6); }
+    88%{ opacity:1; transform:scale(1.15); }
+    100%{ opacity:1; transform:scale(1); }
+  }
+  .r-glow{ opacity:0; animation: rGlow 5.5s ease-in-out forwards; }
+  @keyframes rGlow{ 0%,78%{ opacity:0; } 90%,100%{ opacity:0.9; } }
+</style>
+</head>
+<body>
+
+<div class="form-shell" id="formShell">
+  <div class="scenery" id="scenery">
+    <svg viewBox="0 0 500 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+          <stop id="skyStop1" offset="0%" stop-color="#FDEFE3"/>
+          <stop id="skyStop2" offset="100%" stop-color="#EAF2FF"/>
+        </linearGradient>
+        <radialGradient id="sunG" cx="50%" cy="50%" r="50%">
+          <stop id="sunStop1" offset="0%" stop-color="#FFDDB0" stop-opacity="0.95"/>
+          <stop id="sunStop2" offset="100%" stop-color="#FFDDB0" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect x="0" y="0" width="500" height="900" fill="url(#skyG)"/>
+      <circle id="sunCircle" cx="360" cy="150" r="95" fill="url(#sunG)" style="transition:cx 1600ms ease, cy 1600ms ease;"/>
+      <g id="birds" opacity="0.5" stroke="#8A6A4A" stroke-width="1.4" fill="none" style="transition:opacity 1600ms ease;">
+        <path d="M120 90 q6 -8 12 0 q6 -8 12 0"/>
+        <path d="M300 60 q5 -7 10 0 q5 -7 10 0"/>
+      </g>
+      <path id="mountainsFar" d="M0 440 L90 350 L180 420 L270 330 L360 420 L440 360 L500 420 L500 900 L0 900 Z" fill="#F3D9BE" opacity="0.75" style="transition:fill 1600ms ease;"/>
+      <path id="mountainsNear" d="M0 500 L110 410 L220 490 L320 400 L420 490 L500 430 L500 900 L0 900 Z" fill="#E0BFA0" opacity="0.85" style="transition:fill 1600ms ease;"/>
+    </svg>
+  </div>
+  <div class="form-topbar">
+    <div class="wrap" style="max-width:560px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <a href="index.html"><img src="logo.png" alt="Bridgr" style="height:24px; border-radius:5px;"></a>
+        <span style="font-family:'Fraunces'; font-size:15px;">Bridgr Founding Mentor</span>
+      </div>
+      <div class="form-progress-track"><div class="form-progress-fill" id="progFill"></div></div>
+      <div class="form-progress-label"><b id="progStage">Welcome</b><span id="progPct">0%</span></div>
+    </div>
+  </div>
+
+  <div class="form-body">
+    <div class="wrap" style="width:100%; padding:0;">
+
+      <section class="form-page active" data-page="0" data-progress="0" data-stage="Welcome">
+        <div class="form-card" style="text-align:center;">
+          <img src="logo.png" alt="Bridgr" style="height:60px; margin:0 auto 20px; border-radius:12px;">
+          <p class="form-eyebrow">Founding Member Program</p>
+          <h1 class="form-h xl">Become a Bridgr Founding Member.</h1>
+          <p class="form-sub">Bridgr connects NEET aspirants and medical students with verified peers across colleges. We're building our founding network across Karnataka — this takes about 5 minutes, and you'll be one of the first to shape what Bridgr becomes.</p>
+          <button class="btn btn-primary" onclick="goTo(1)">Let's Begin →</button>
+        </div>
+      </section>
+
+      <!-- BASIC DETAILS -->
+      <section class="form-page" data-page="1" data-progress="20" data-stage="Basic Details">
+        <div class="form-card">
+          <p class="form-eyebrow">Basic Details</p>
+          <h2 class="form-h">Let's start with the basics.</h2>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">Full Name <span class="req">*</span></label>
+            <input class="f-input" type="text" id="q_name" placeholder="Your full name">
+            <p class="f-error">Please enter your name.</p>
+          </div>
+          <div class="f-group">
+            <label class="f-label">WhatsApp Number</label>
+            <input class="f-input" type="tel" id="q_whatsapp" maxlength="10" inputmode="numeric" placeholder="10-digit number">
+          </div>
+          <div class="f-group" data-required="true">
+            <label class="f-label">Email ID <span class="req">*</span></label>
+            <input class="f-input" type="email" id="q_email" placeholder="you@example.com">
+            <p class="f-error">Please enter a valid email.</p>
+          </div>
+          <div class="f-group" data-required="true">
+            <label class="f-label">Gender <span class="req">*</span></label>
+            <div class="option-cards" id="q_gender">
+              <div class="opt-card" data-value="Male"><div class="dot"></div><span class="label">Male</span></div>
+              <div class="opt-card" data-value="Female"><div class="dot"></div><span class="label">Female</span></div>
+              <div class="opt-card" data-value="Other"><div class="dot"></div><span class="label">Other</span></div>
+            </div>
+            <p class="f-error">Please select an option.</p>
+            <div class="conditional" id="wrap_genderOther"><input class="f-input" type="text" id="q_genderOther" placeholder="Please specify" style="margin-top:10px;"></div>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-ghost btn-back" onclick="goTo(0)">Back</button>
+            <button class="btn btn-primary" onclick="validateAndGo(1,2)">Continue</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACADEMIC DETAILS -->
+      <section class="form-page" data-page="2" data-progress="40" data-stage="Academic Details">
+        <div class="form-card">
+          <p class="form-eyebrow">Academic Details</p>
+          <h2 class="form-h">Tell us about your college.</h2>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">Medical College Name <span class="req">*</span></label>
+            <select class="f-select" id="q_college">
+              <option value="">Select your college</option>
+              <optgroup label="Karnataka — Government">
+                <option>Bangalore Medical College &amp; Research Institute (BMCRI)</option>
+                <option>Mysore Medical College &amp; Research Institute</option>
+                <option>Karnataka Institute of Medical Sciences, Hubballi</option>
+                <option>Vijayanagar Institute of Medical Sciences, Bellary</option>
+                <option>Belagavi Institute of Medical Sciences (BIMS)</option>
+                <option>Karwar Institute of Medical Sciences</option>
+                <option>Kodagu Institute of Medical Sciences</option>
+                <option>Koppal Institute of Medical Sciences (KoIMS)</option>
+                <option>Mandya Institute of Medical Sciences</option>
+                <option>Raichur Institute of Medical Sciences</option>
+                <option>Shimoga Institute of Medical Sciences</option>
+                <option>Chikkaballapura Institute of Medical Sciences</option>
+                <option>S. Nijalingappa Medical College &amp; HSK Hospital, Bagalkot</option>
+              </optgroup>
+              <optgroup label="Karnataka — Private / Deemed">
+                <option>St John's Medical College, Bangalore</option>
+                <option>JSS Medical College, Mysuru</option>
+                <option>Kasturba Medical College (KMC), Manipal</option>
+                <option>Kempegowda Institute of Medical Sciences (KIMS), Bangalore</option>
+                <option>M S Ramaiah Medical College, Bangalore</option>
+                <option>Vydehi Institute of Medical Sciences, Bangalore</option>
+                <option>Sapthagiri Institute of Medical Sciences, Bangalore</option>
+                <option>Dayananda Sagar Medical College, Bangalore</option>
+                <option>BGS Global Institute of Medical Sciences, Bangalore</option>
+                <option>JJM Medical College, Davangere</option>
+                <option>Adichunchanagiri Institute of Medical Sciences, BG Nagara</option>
+                <option>Sri Siddhartha Medical College, Tumkur</option>
+                <option>Al-Ameen Medical College, Vijayapura</option>
+                <option>Yenepoya Medical College, Mangalore</option>
+                <option>Father Muller Medical College, Mangalore</option>
+                <option>KVG Medical College, Sullia</option>
+              </optgroup>
+              <optgroup label="AIIMS">
+                <option>AIIMS Delhi</option><option>AIIMS Bhopal</option><option>AIIMS Bhubaneswar</option>
+                <option>AIIMS Jodhpur</option><option>AIIMS Patna</option><option>AIIMS Raipur</option>
+                <option>AIIMS Rishikesh</option><option>AIIMS Nagpur</option><option>AIIMS Mangalagiri</option>
+                <option>AIIMS Kalyani</option><option>AIIMS Gorakhpur</option><option>AIIMS Bathinda</option>
+                <option>AIIMS Deoghar</option><option>AIIMS Rajkot</option><option>AIIMS Bibinagar</option>
+                <option>AIIMS Vijaypur (Jammu)</option><option>AIIMS Guwahati</option><option>AIIMS Bilaspur</option>
+                <option>AIIMS Darbhanga</option><option>AIIMS Rae Bareli</option><option>AIIMS Madurai</option>
+              </optgroup>
+              <option>Other</option>
+            </select>
+            <p class="f-error">Please select your college.</p>
+            <p class="f-hint">Don't see your college? Select "Other" and type it in below.</p>
+          </div>
+          <div class="conditional" id="wrap_collegeOther">
+            <div class="f-group"><label class="f-label md">If Other, please specify your college name</label><input class="f-input" type="text" id="q_collegeOther" placeholder="Your college name"></div>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">Current Year <span class="req">*</span></label>
+            <div class="option-cards" id="q_year">
+              <div class="opt-card" data-value="1st Year"><div class="dot"></div><span class="label">1st Year</span></div>
+              <div class="opt-card" data-value="2nd Year"><div class="dot"></div><span class="label">2nd Year</span></div>
+              <div class="opt-card" data-value="3rd Year"><div class="dot"></div><span class="label">3rd Year</span></div>
+              <div class="opt-card" data-value="4th Year"><div class="dot"></div><span class="label">4th Year</span></div>
+              <div class="opt-card" data-value="Intern"><div class="dot"></div><span class="label">Intern</span></div>
+              <div class="opt-card" data-value="Graduate"><div class="dot"></div><span class="label">Graduate</span></div>
+            </div>
+            <p class="f-error">Please select your current year.</p>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">State <span class="req">*</span></label>
+            <select class="f-select" id="q_mstate">
+              <option value="">Select your state</option>
+              <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option>
+              <option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option>
+              <option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option>
+              <option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option>
+              <option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option>
+              <option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option>
+              <option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option>
+              <option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option>
+              <option>Andaman and Nicobar Islands</option><option>Chandigarh</option>
+              <option>Dadra and Nagar Haveli and Daman and Diu</option><option>Delhi</option>
+              <option>Jammu and Kashmir</option><option>Ladakh</option><option>Lakshadweep</option>
+              <option>Puducherry</option>
+            </select>
+            <p class="f-error">Please select your state.</p>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-ghost btn-back" onclick="goTo(1)">Back</button>
+            <button class="btn btn-primary" onclick="validateAndGo(2,3)">Continue</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPERTISE -->
+      <section class="form-page" data-page="3" data-progress="60" data-stage="Expertise">
+        <div class="form-card">
+          <p class="form-eyebrow">Expertise</p>
+          <h2 class="form-h xl">What can you help students with?</h2>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">Languages Comfortable With <span class="req">*</span></label>
+            <div class="chip-grid" id="q_languages">
+              <div class="chip" data-value="English">English</div><div class="chip" data-value="Kannada">Kannada</div>
+              <div class="chip" data-value="Hindi">Hindi</div><div class="chip" data-value="Tamil">Tamil</div>
+              <div class="chip" data-value="Telugu">Telugu</div><div class="chip" data-value="Malayalam">Malayalam</div>
+              <div class="chip" data-value="Marathi">Marathi</div><div class="chip" data-value="Other">Other</div>
+            </div>
+            <p class="f-error">Please select at least one language.</p>
+          </div>
+          <div class="conditional" id="wrap_languageOther">
+            <div class="f-group"><label class="f-label md">Please specify the language</label><input class="f-input" type="text" id="q_languageOtherSpecify" placeholder="e.g. Konkani"></div>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label md">Which areas would you be comfortable helping students with? <span class="req">*</span></label>
+            <div class="chip-grid" id="q_areas">
+              <div class="chip" data-value="NEET UG Counselling">NEET UG Counselling</div>
+              <div class="chip" data-value="College Selection & Option Entry">College Selection &amp; Option Entry</div>
+              <div class="chip" data-value="Hostel & Campus Life">Hostel &amp; Campus Life</div>
+              <div class="chip" data-value="Academics & Study Strategies">Academics &amp; Study Strategies</div>
+              <div class="chip" data-value="First Year MBBS Guidance">First Year MBBS Guidance</div>
+              <div class="chip" data-value="Textbooks & Resources">Textbooks &amp; Resources</div>
+              <div class="chip" data-value="Research Projects">Research Projects</div>
+              <div class="chip" data-value="ICMR STS">ICMR STS</div>
+              <div class="chip" data-value="Conferences & Presentations">Conferences &amp; Presentations</div>
+              <div class="chip" data-value="Extracurricular Activities">Extracurricular Activities</div>
+              <div class="chip" data-value="Scholarships & Financial Aid">Scholarships &amp; Financial Aid</div>
+              <div class="chip" data-value="Internship Guidance">Internship Guidance</div>
+              <div class="chip" data-value="NEET PG Preparation">NEET PG Preparation</div>
+              <div class="chip" data-value="USMLE / Foreign Exams">USMLE / Foreign Exams</div>
+              <div class="chip" data-value="Mental Adjustment to Medical College">Mental Adjustment to Medical College</div>
+              <div class="chip" data-value="General Guidance">General Guidance</div>
+            </div>
+            <p class="f-error">Please select at least one area.</p>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label sm">Which area are you most confident in? <span class="req">*</span></label>
+            <select class="f-select" id="q_confidentArea">
+              <option value="">Select from your areas above</option>
+            </select>
+            <p class="f-hint" id="confidentHint">Pick your areas above first — this list will show only those.</p>
+            <p class="f-error">Please select one.</p>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-ghost btn-back" onclick="goTo(2)">Back</button>
+            <button class="btn btn-primary" onclick="validateAndGo(3,4)">Continue</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- AVAILABILITY -->
+      <section class="form-page" data-page="4" data-progress="80" data-stage="Availability">
+        <div class="form-card">
+          <p class="form-eyebrow">Availability &amp; Style</p>
+          <h2 class="form-h">How would you like to help?</h2>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">Would you be willing to help students understand your college better? <span class="req">*</span></label>
+            <div class="option-cards" id="q_helpCollege">
+              <div class="opt-card" data-value="Yes"><div class="dot"></div><span class="label">Yes</span></div>
+              <div class="opt-card" data-value="No"><div class="dot"></div><span class="label">No</span></div>
+            </div>
+            <p class="f-error">Please select an option.</p>
+          </div>
+          <div class="conditional" id="wrap_helpWhat">
+            <div class="f-group">
+              <label class="f-label md">If yes, what can you help with?</label>
+              <div class="chip-grid" id="q_helpWhat">
+                <div class="chip" data-value="Hostel Facilities">Hostel Facilities</div>
+                <div class="chip" data-value="Mess & Food">Mess &amp; Food</div>
+                <div class="chip" data-value="Academics">Academics</div>
+                <div class="chip" data-value="Clinical Exposure">Clinical Exposure</div>
+                <div class="chip" data-value="Faculty">Faculty</div>
+                <div class="chip" data-value="Research Opportunities">Research Opportunities</div>
+                <div class="chip" data-value="Student Culture">Student Culture</div>
+                <div class="chip" data-value="City & Lifestyle">City &amp; Lifestyle</div>
+                <div class="chip" data-value="Fees & Expenses">Fees &amp; Expenses</div>
+                <div class="chip" data-value="Scholarships">Scholarships</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">How often would you be comfortable helping students? <span class="req">*</span></label>
+            <select class="f-select" id="q_frequency">
+              <option value="">Select one</option>
+              <option>Occasionally</option><option>1-2 Times Per Month</option>
+              <option>1-2 Times Per Week</option><option>Flexible</option>
+            </select>
+            <p class="f-error">Please select an option.</p>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">Preferred Mode of Interaction <span class="req">*</span></label>
+            <div class="chip-grid" id="q_modeInteraction">
+              <div class="chip" data-value="WhatsApp Chat">WhatsApp Chat</div>
+              <div class="chip" data-value="Audio Call">Audio Call</div>
+              <div class="chip" data-value="Video Call">Video Call</div>
+              <div class="chip" data-value="Group Discussion">Group Discussion</div>
+              <div class="chip" data-value="Q&A Sessions">Q&amp;A Sessions</div>
+            </div>
+            <p class="f-error">Please select at least one.</p>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-ghost btn-back" onclick="goTo(4)">Back</button>
+            <button class="btn btn-primary" onclick="validateAndGo(4,5)">Continue</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT YOU -->
+      <section class="form-page" data-page="5" data-progress="95" data-stage="About You">
+        <div class="form-card">
+          <p class="form-eyebrow">About You</p>
+          <h2 class="form-h">Almost there.</h2>
+
+          <div class="f-group">
+            <label class="f-label">Why would you like to be a part of Bridgr?</label>
+            <textarea class="f-textarea" id="q_why" placeholder="Share your thoughts"></textarea>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">Would you be interested in helping us expand Bridgr to more colleges? <span class="req">*</span></label>
+            <div class="option-cards" id="q_expand">
+              <div class="opt-card" data-value="Yes"><div class="dot"></div><span class="label">Yes</span></div>
+              <div class="opt-card" data-value="No"><div class="dot"></div><span class="label">No</span></div>
+            </div>
+            <p class="f-error">Please select an option.</p>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">Do you know students from other medical colleges who may be interested in joining Bridgr? <span class="req">*</span></label>
+            <div class="option-cards" id="q_knowOthers">
+              <div class="opt-card" data-value="Yes"><div class="dot"></div><span class="label">Yes</span></div>
+              <div class="opt-card" data-value="No"><div class="dot"></div><span class="label">No</span></div>
+            </div>
+            <p class="f-error">Please select an option.</p>
+          </div>
+          <div class="conditional" id="wrap_otherColleges">
+            <div class="f-group"><label class="f-label md">If yes, mention their college names.</label><input class="f-input" type="text" id="q_otherColleges" placeholder="College names"></div>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">How would you rate your prior experience in mentoring or guiding junior medical students or aspirants? <span class="req">*</span></label>
+            <div class="scale-row" id="q_experience">
+              <div class="scale-dot" data-value="1">1</div>
+              <div class="scale-dot" data-value="2">2</div>
+              <div class="scale-dot" data-value="3">3</div>
+              <div class="scale-dot" data-value="4">4</div>
+              <div class="scale-dot" data-value="5">5</div>
+            </div>
+            <div class="scale-labels"><span>No prior experience</span><span>Highly experienced</span></div>
+            <p class="f-error">Please select a rating.</p>
+          </div>
+
+          <div class="f-group">
+            <label class="f-label md">Which digital resources are you most comfortable creating or sharing to support aspirants?</label>
+            <div class="chip-grid" id="q_resources">
+              <div class="chip" data-value="Study notes/Summaries">Study notes/Summaries</div>
+              <div class="chip" data-value="Handwritten diagrams/Flowcharts">Handwritten diagrams/Flowcharts</div>
+              <div class="chip" data-value="Question banks/Past papers">Question banks/Past papers</div>
+              <div class="chip" data-value="Study schedules/Timetables">Study schedules/Timetables</div>
+              <div class="chip" data-value="Clinical case study links">Clinical case study links</div>
+              <div class="chip" data-value="Book recommendations">Book recommendations</div>
+            </div>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">What is your primary motivation for becoming a Founding Member of Bridgr? <span class="req">*</span></label>
+            <select class="f-select" id="q_motivation">
+              <option value="">Select one</option>
+              <option>To build my professional network</option>
+              <option>To give back to the medical community</option>
+              <option>To develop leadership and communication skills</option>
+              <option>To contribute to innovation in medical education</option>
+              <option>To enhance my CV/profile</option>
+            </select>
+            <p class="f-error">Please select an option.</p>
+          </div>
+
+          <div class="f-group" data-required="true">
+            <label class="f-label">How did you hear about this form? If this was sent to you, please mention the sender's name. <span class="req">*</span></label>
+            <input class="f-input" type="text" id="q_heard" placeholder="Your answer">
+            <p class="f-error">Please answer this question.</p>
+          </div>
+
+          <div class="form-nav">
+            <button class="btn btn-ghost btn-back" onclick="goTo(4)">Back</button>
+            <button class="btn btn-primary" onclick="submitForm()">Submit Application</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-page" data-page="loading" data-progress="100" data-stage="Complete">
+        <div class="form-card">
+          <div class="loading-screen">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <p style="font-family:'Fraunces'; font-size:18px;">Submitting your application...</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-page" data-page="success" data-progress="100" data-stage="Complete">
+        <div class="form-card">
+          <div class="success-screen">
+            <svg class="rescue-scene" viewBox="0 0 320 260">
+              <defs>
+                <linearGradient id="rSky" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#BFD9FA"/>
+                  <stop offset="100%" stop-color="#EAF2FF"/>
+                </linearGradient>
+                <linearGradient id="rCliff" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#8FA6C9"/>
+                  <stop offset="100%" stop-color="#5E75A0"/>
+                </linearGradient>
+                <linearGradient id="rMentorBody" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#6FA0E8"/>
+                  <stop offset="100%" stop-color="#2C4E9E"/>
+                </linearGradient>
+                <linearGradient id="rMenteeBody" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#8FB8F5"/>
+                  <stop offset="100%" stop-color="#4C7FDB"/>
+                </linearGradient>
+                <radialGradient id="rGlowGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#FFE9A8" stop-opacity="0.9"/>
+                  <stop offset="100%" stop-color="#FFE9A8" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+
+              <rect x="0" y="0" width="320" height="260" fill="url(#rSky)"/>
+              <!-- distant peaks -->
+              <path d="M0 120 L40 80 L80 115 L120 70 L170 120 L210 85 L260 125 L320 95 L320 260 L0 260 Z" fill="#AFC5E9" opacity="0.6"/>
+              <!-- birds -->
+              <g stroke="#7C93C4" stroke-width="1.3" fill="none" opacity="0.7">
+                <path d="M40 40 q5 -7 10 0 q5 -7 10 0"/>
+                <path d="M230 30 q4 -6 8 0 q4 -6 8 0"/>
+              </g>
+
+              <!-- cliff mass -->
+              <path d="M0 260 L0 150 L90 90 L150 135 L320 110 L320 260 Z" fill="url(#rCliff)"/>
+              <path d="M90 90 L150 135 L110 140 L80 105 Z" fill="#7690BE" opacity="0.7"/>
+
+              <!-- celebration glow (appears at the end) -->
+              <circle class="r-glow" cx="178" cy="60" r="55" fill="url(#rGlowGrad)"/>
+              <g class="r-sparkle">
+                <path d="M175 40 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z" fill="#FFD98F"/>
+                <path d="M205 55 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#FFD98F"/>
+                <path d="M150 55 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#FFD98F"/>
+              </g>
+
+              <!-- mentor (top of cliff) -->
+              <g class="r-mentor">
+                <ellipse cx="165" cy="138" rx="16" ry="5" fill="#5E75A0" opacity="0.4"/>
+                <path d="M150 135 C150 118 158 105 166 105 C174 105 182 116 181 132 L181 138 L150 138 Z" fill="url(#rMentorBody)"/>
+                <circle cx="166" cy="96" r="12" fill="#2C4E9E"/>
+                <g class="r-mentorArm">
+                  <rect x="163" y="92" width="46" height="10" rx="5" fill="url(#rMentorBody)"/>
+                  <circle cx="209" cy="97" r="7" fill="#2C4E9E"/>
+                </g>
+              </g>
+
+              <!-- mentee (rising from the cliff edge) -->
+              <g class="r-mentee">
+                <circle cx="128" cy="188" r="11" fill="#4C7FDB"/>
+                <path d="M114 200 C114 214 120 228 128 228 C136 228 143 216 142 202 L142 198 L114 198 Z" fill="url(#rMenteeBody)"/>
+                <rect x="122" y="176" width="42" height="9" rx="4.5" fill="url(#rMenteeBody)" transform="rotate(-18 128 188)"/>
+                <circle cx="160" cy="167" r="6.5" fill="#4C7FDB"/>
+              </g>
+            </svg>
+            <h2 class="form-h">Welcome to Bridgr!</h2>
+            <p class="form-sub" style="margin-bottom:0;">Our team will review your application and reach out once you're verified.</p>
+            <div class="ref-id" id="refId">BRD-MENTOR-0001</div>
+            <div class="bonus-banner">🎉 Complete your college verification, get your first counselling session, and claim your joining bonus.</div>
+            <p class="form-sub">Questions in the meantime? Reach out on WhatsApp.</p>
+            <a class="btn btn-primary" style="display:block; margin-bottom:12px;" href="https://chat.whatsapp.com/G6puc9drmge1sUBk3Eir5P?s=cl&p=a&ilr=1&amv=2" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
+            <a class="btn btn-ghost" style="display:block;" href="index.html">Return Home</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const sceneStages = {
+    0:{ sky1:'#FDEFE3', sky2:'#EAF2FF', sun:'#FFDDB0', sunX:360, sunY:150, far:'#F3D9BE', near:'#E0BFA0', birds:0.5 },
+    1:{ sky1:'#E7F6EF', sky2:'#EAF2FF', sun:'#FFF3C2', sunX:320, sunY:130, far:'#CDEBD9', near:'#A9DDC0', birds:0.4 },
+    2:{ sky1:'#DCEBFF', sky2:'#F3F7FF', sun:'#FFE9C2', sunX:280, sunY:170, far:'#C3D9F7', near:'#9FBFEE', birds:0.35 },
+    3:{ sky1:'#F1EAFB', sky2:'#EAF2FF', sun:'#F4D9F0', sunX:250, sunY:190, far:'#D6C9F2', near:'#B7A4E8', birds:0.3 },
+    4:{ sky1:'#FFF3D6', sky2:'#EAF2FF', sun:'#FFD98F', sunX:220, sunY:140, far:'#F5D89A', near:'#E6BE72', birds:0.25 },
+    5:{ sky1:'#DCEBFF', sky2:'#EAF2FF', sun:'#FFEFC2', sunX:200, sunY:110, far:'#BBD8F7', near:'#8FB8EF', birds:0.2 },
+    loading:{ sky1:'#DCEBFF', sky2:'#EAF2FF', sun:'#FFEFC2', sunX:250, sunY:120, far:'#C3D9F7', near:'#9FBFEE', birds:0.2 },
+    success:{ sky1:'#E3FBEC', sky2:'#DCEBFF', sun:'#FFF3C2', sunX:250, sunY:90, far:'#BFE9D0', near:'#8FDCAE', birds:0.15 }
+  };
+  function applyScene(stage){
+    const s = sceneStages[stage] || sceneStages[0];
+    document.getElementById('skyStop1').setAttribute('stop-color', s.sky1);
+    document.getElementById('skyStop2').setAttribute('stop-color', s.sky2);
+    document.getElementById('sunStop1').setAttribute('stop-color', s.sun);
+    document.getElementById('sunCircle').setAttribute('cx', s.sunX);
+    document.getElementById('sunCircle').setAttribute('cy', s.sunY);
+    document.getElementById('mountainsFar').setAttribute('fill', s.far);
+    document.getElementById('mountainsNear').setAttribute('fill', s.near);
+    document.getElementById('birds').style.opacity = s.birds;
+  }
+  applyScene(0);
+  const progFill = document.getElementById('progFill');
+  const progStage = document.getElementById('progStage');
+  const progPct = document.getElementById('progPct');
+
+  function setProgress(pct, stage){ progFill.style.width = pct + '%'; progStage.textContent = stage; progPct.textContent = pct + '%'; }
+  function goTo(page){
+    document.querySelectorAll('.form-page').forEach(p => p.classList.remove('active'));
+    const target = document.querySelector('.form-page[data-page="'+page+'"]');
+    target.classList.add('active');
+    setProgress(target.dataset.progress, target.dataset.stage);
+    applyScene(page);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  document.querySelectorAll('.chip-grid').forEach(grid => {
+    grid.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => chip.classList.toggle('selected')));
+  });
+  document.querySelector('#q_languages .chip[data-value="Other"]').addEventListener('click', function(){
+    document.getElementById('wrap_languageOther').classList.toggle('open', this.classList.contains('selected'));
+  });
+
+  function bindSingleSelect(id, onChange){
+    const group = document.getElementById(id);
+    group.querySelectorAll('.opt-card').forEach(card => {
+      card.addEventListener('click', () => {
+        group.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        if (onChange) onChange(card.dataset.value);
+      });
+    });
+  }
+  bindSingleSelect('q_gender', (v) => document.getElementById('wrap_genderOther').classList.toggle('open', v === 'Other'));
+  bindSingleSelect('q_year');
+  bindSingleSelect('q_helpCollege', (v) => document.getElementById('wrap_helpWhat').classList.toggle('open', v === 'Yes'));
+  bindSingleSelect('q_expand');
+  bindSingleSelect('q_knowOthers', (v) => document.getElementById('wrap_otherColleges').classList.toggle('open', v === 'Yes'));
+
+  document.getElementById('q_college').addEventListener('change', (e) => {
+    document.getElementById('wrap_collegeOther').classList.toggle('open', e.target.value === 'Other');
+  });
+  document.getElementById('q_whatsapp').addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g,'').slice(0,10);
+  });
+
+  document.querySelectorAll('#q_experience .scale-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('#q_experience .scale-dot').forEach(d => d.classList.remove('selected'));
+      dot.classList.add('selected');
+    });
+  });
+
+  function getSelected(id){ const sel = document.querySelector('#'+id+' .opt-card.selected'); return sel ? sel.dataset.value : ''; }
+  function getChips(id){ return Array.from(document.querySelectorAll('#'+id+' .chip.selected')).map(c => c.dataset.value); }
+
+  function validateAndGo(fromPage, toPage){
+    const page = document.querySelector('.form-page[data-page="'+fromPage+'"]');
+    let valid = true;
+    page.querySelectorAll('.f-group[data-required="true"]').forEach(group => {
+      const input = group.querySelector('.f-input, .f-select');
+      let ok = true;
+      if (input) ok = input.value.trim() !== '';
+      const optCards = group.querySelector('.option-cards');
+      if (optCards) ok = !!optCards.querySelector('.opt-card.selected');
+      const chipGrid = group.querySelector('.chip-grid');
+      if (chipGrid) ok = !!chipGrid.querySelector('.chip.selected');
+      const scale = group.querySelector('.scale-row');
+      if (scale) ok = !!scale.querySelector('.scale-dot.selected');
+      group.classList.toggle('invalid', !ok);
+      if (!ok) valid = false;
+    });
+    if (!valid) return;
+
+    // populate "most confident" dropdown from selected areas, right before entering page 3->4 transition isn't
+    // relevant here, but when leaving page 3 we rebuild it below via a dedicated call.
+    if (fromPage === 3) {
+      const selectedAreas = getChips('q_areas');
+      const sel = document.getElementById('q_confidentArea');
+      sel.innerHTML = '<option value="">Select one</option>' + selectedAreas.map(a => `<option>${a}</option>`).join('');
+    }
+    goTo(toPage);
+  }
+
+  // rebuild confident-area list live as areas are (de)selected, so page 3 stays in sync
+  document.querySelectorAll('#q_areas .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const selectedAreas = getChips('q_areas');
+      const sel = document.getElementById('q_confidentArea');
+      const prev = sel.value;
+      sel.innerHTML = '<option value="">Select from your areas above</option>' + selectedAreas.map(a => `<option>${a}</option>`).join('');
+      if (selectedAreas.includes(prev)) sel.value = prev;
+      document.getElementById('confidentHint').style.display = selectedAreas.length ? 'none' : 'block';
+    });
+  });
+
+  const MENTOR_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxOXIrTs3vJxiv0VH9cwIPG8LLgxdYimm-F133mSPpT1dMqpobKWdQXj7NJIDA3RspV/exec';
+
+  function submitForm(){
+    const lastPage = document.querySelector('.form-page[data-page="5"]');
+    let valid = true;
+    lastPage.querySelectorAll('.f-group[data-required="true"]').forEach(group => {
+      const input = group.querySelector('.f-input, .f-select');
+      let ok = true;
+      if (input) ok = input.value.trim() !== '';
+      const optCards = group.querySelector('.option-cards');
+      if (optCards) ok = !!optCards.querySelector('.opt-card.selected');
+      const scale = group.querySelector('.scale-row');
+      if (scale) ok = !!scale.querySelector('.scale-dot.selected');
+      group.classList.toggle('invalid', !ok);
+      if (!ok) valid = false;
+    });
+    if (!valid) return;
+
+    const refId = 'BRD-MENTOR-' + String(Math.floor(1000 + Math.random()*9000));
+    const answers = {
+      referenceId: refId,
+      name: document.getElementById('q_name').value,
+      whatsapp: document.getElementById('q_whatsapp').value,
+      email: document.getElementById('q_email').value,
+      gender: getSelected('q_gender'),
+      genderOther: document.getElementById('q_genderOther').value,
+      college: document.getElementById('q_college').value,
+      collegeOther: document.getElementById('q_collegeOther').value,
+      year: getSelected('q_year'),
+      state: document.getElementById('q_mstate').value,
+      languages: getChips('q_languages'),
+      languageOtherSpecify: document.getElementById('q_languageOtherSpecify').value,
+      areas: getChips('q_areas'),
+      confidentArea: document.getElementById('q_confidentArea').value,
+      helpCollege: getSelected('q_helpCollege'),
+      helpWhat: getChips('q_helpWhat'),
+      frequency: document.getElementById('q_frequency').value,
+      modeInteraction: getChips('q_modeInteraction'),
+      why: document.getElementById('q_why').value,
+      expand: getSelected('q_expand'),
+      knowOthers: getSelected('q_knowOthers'),
+      otherColleges: document.getElementById('q_otherColleges').value,
+      experience: document.querySelector('#q_experience .scale-dot.selected')?.dataset.value || '',
+      resources: getChips('q_resources'),
+      motivation: document.getElementById('q_motivation').value,
+      heard: document.getElementById('q_heard').value
+    };
+
+    fetch(MENTOR_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(answers)
+    }).catch(err => console.error('Submission error:', err));
+
+    goTo('loading');
+    setTimeout(() => {
+      document.getElementById('refId').textContent = refId;
+      goTo('success');
+    }, 1400);
+  }
+</script>
+</body>
+</html>

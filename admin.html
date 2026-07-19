@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Bridgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root{ --navy:#0B1026; --blue:#4C7FDB; --blue-light:#8FB8F5; --blue-deep:#2C4E9E; --ink:#0B1026; --muted:#5B6480; --bg:#FAFAFC; --card:#FFFFFF; --line:#ECEBF4; --green:#25D366; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ font-family:'Inter', sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  h1,h2{ font-family:'Fraunces', serif; font-weight:500; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 20px; }
+  table{ border-collapse:collapse; width:100%; }
+
+  .gate{ min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, #0B1026 0%, #17235A 35%, #2C4E9E 68%, #6E93D2 100%); padding:20px; }
+  .gate-card{ background:#fff; border-radius:20px; padding:36px 28px; max-width:340px; width:100%; text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.3); }
+  .gate-card img{ height:44px; margin:0 auto 16px; border-radius:8px; }
+  .gate-card h1{ font-size:20px; margin-bottom:6px; }
+  .gate-card p{ color:var(--muted); font-size:13px; margin-bottom:22px; }
+  .pin-input{ width:100%; text-align:center; letter-spacing:0.4em; font-size:22px; padding:14px; border-radius:12px; border:1.5px solid var(--line); margin-bottom:14px; font-family:'Inter'; }
+  .pin-input:focus{ outline:none; border-color:var(--blue); }
+  .gate-btn{ width:100%; padding:14px; border-radius:12px; border:none; background:linear-gradient(135deg, var(--blue), var(--blue-deep)); color:#fff; font-weight:600; cursor:pointer; }
+  .gate-error{ color:#E14B4B; font-size:12.5px; margin-top:10px; display:none; }
+
+  .dash{ display:none; min-height:100vh; }
+  .dash.active{ display:block; }
+  header{ padding:18px 0; border-bottom:1px solid var(--line); background:#fff; }
+  header nav{ display:flex; align-items:center; justify-content:space-between; }
+  .logo{ display:flex; align-items:center; gap:8px; }
+  .logo img{ height:26px; border-radius:6px; }
+  .logo span{ font-family:'Fraunces'; font-size:17px; }
+  .lock-btn{ font-size:12.5px; color:var(--muted); background:none; border:1px solid var(--line); padding:8px 14px; border-radius:999px; cursor:pointer; }
+
+  .tabs{ display:flex; gap:6px; background:#F0F2F8; padding:5px; border-radius:12px; margin:24px 0; width:fit-content; }
+  .tab-btn{ padding:10px 20px; border-radius:9px; border:none; background:transparent; font-size:13.5px; font-weight:600; color:var(--muted); cursor:pointer; }
+  .tab-btn.active{ background:#fff; color:var(--blue); box-shadow:0 2px 6px rgba(11,16,38,0.08); }
+
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  .filters{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px; align-items:center; }
+  .filters select, .filters input{ padding:10px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:13px; font-family:'Inter'; background:#fff; }
+  .refresh-btn{ padding:10px 16px; border-radius:10px; border:1.5px solid var(--line); background:#fff; font-size:13px; cursor:pointer; color:var(--blue); font-weight:600; }
+  .count-pill{ font-size:12px; color:var(--muted); margin-left:auto; }
+
+  .data-table{ background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+  .data-table table{ min-width:640px; }
+  .table-scroll{ overflow-x:auto; }
+  th{ text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); background:#F7F8FC; padding:12px 16px; border-bottom:1px solid var(--line); }
+  td{ padding:13px 16px; font-size:13px; border-bottom:1px solid var(--line); color:var(--ink); }
+  tr.data-row{ cursor:pointer; transition:background .15s ease; }
+  tr.data-row:hover{ background:#F5F8FF; }
+  tr:last-child td{ border-bottom:none; }
+  .status-pill{ font-size:11px; padding:4px 10px; border-radius:999px; font-weight:600; background:#EAF2FF; color:var(--blue); }
+  .empty-row td, .loading-row td{ text-align:center; color:var(--muted); padding:30px; }
+  .error-row td{ text-align:center; color:#C0392B; padding:20px; font-size:12.5px; }
+
+  .note{ background:#EAF2FF; border:1px solid #D6E6FF; border-radius:16px; padding:18px; font-size:12.5px; color:var(--muted); line-height:1.7; margin-top:22px; }
+  .note b{ color:var(--ink); }
+  .dash-body{ padding:0 0 60px; }
+
+  /* Detail modal */
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(11,16,38,0.5); z-index:60; display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal-backdrop.open{ display:flex; }
+  .modal{ background:#fff; border-radius:20px; max-width:560px; width:100%; max-height:85vh; overflow-y:auto; padding:30px 26px; }
+  .modal-close{ float:right; background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted); }
+  .modal h3{ font-size:20px; margin-bottom:4px; }
+  .modal .sub{ color:var(--muted); font-size:12.5px; margin-bottom:20px; }
+  .detail-row{ padding:12px 0; border-bottom:1px solid var(--line); }
+  .detail-row:last-child{ border-bottom:none; }
+  .detail-row .k{ font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:4px; }
+  .detail-row .v{ font-size:14px; color:var(--ink); line-height:1.5; word-break:break-word; }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <img src="logo.png" alt="Bridgr">
+    <h1>Admin Access</h1>
+    <p>Enter your PIN to continue.</p>
+    <input class="pin-input" id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
+    <button class="gate-btn" onclick="checkPin()">Unlock</button>
+    <p class="gate-error" id="gateError">Incorrect PIN. Try again.</p>
+  </div>
+</div>
+
+<div class="dash" id="dash">
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="index.html" class="logo"><img src="logo.png" alt="Bridgr"><span>Bridgr Admin</span></a>
+        <button class="lock-btn" onclick="lock()">Lock</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="dash-body">
+    <div class="wrap">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('aspirants')">Aspirants</button>
+        <button class="tab-btn" onclick="showTab('mentors')">Mentors</button>
+      </div>
+
+      <!-- ASPIRANTS TAB -->
+      <div class="tab-panel active" id="panel-aspirants">
+        <div class="filters">
+          <select id="f-a-state"><option value="">All States</option></select>
+          <input type="text" id="f-a-search" placeholder="Search by name or email...">
+          <button class="refresh-btn" onclick="loadAspirants()">↻ Refresh</button>
+          <span class="count-pill" id="a-count"></span>
+        </div>
+        <div class="data-table">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Name</th><th>State</th><th>Score</th><th>Needs Help With</th><th>Reference ID</th></tr></thead>
+              <tbody id="aspirant-rows"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="note"><b>Live data</b> — pulled directly from your Aspirant Responses Google Sheet. Click any row for the full form.</div>
+      </div>
+
+      <!-- MENTORS TAB -->
+      <div class="tab-panel" id="panel-mentors">
+        <div class="filters">
+          <select id="f-m-college"><option value="">All Colleges</option></select>
+          <select id="f-m-year"><option value="">All Years</option></select>
+          <input type="text" id="f-m-search" placeholder="Search by name...">
+          <button class="refresh-btn" onclick="loadMentors()">↻ Refresh</button>
+          <span class="count-pill" id="m-count"></span>
+        </div>
+        <div class="data-table">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Name</th><th>College</th><th>Year</th><th>Gender</th></tr></thead>
+              <tbody id="mentor-rows"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="note"><b>Live data</b> — pulled directly from your Mentor Responses Google Sheet. Click any row for the full application.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modalName">—</h3>
+    <p class="sub" id="modalSub">—</p>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+  const CORRECT_PIN = "1408";
+  const ASPIRANT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwKLwwoe8L8JCEVPc5mmAd13qj9jsDkcLolPKmM2ggqNiwxGIZo-d5sehDsImLtKxqs/exec';
+  const MENTOR_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxOXIrTs3vJxiv0VH9cwIPG8LLgxdYimm-F133mSPpT1dMqpobKWdQXj7NJIDA3RspV/exec';
+
+  let aspirantData = [];
+  let mentorData = [];
+
+  function checkPin(){
+    const val = document.getElementById('pinInput').value;
+    if (val === CORRECT_PIN){
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dash').classList.add('active');
+      loadAspirants();
+      loadMentors();
+    } else {
+      document.getElementById('gateError').style.display = 'block';
+      document.getElementById('pinInput').value = '';
+    }
+  }
+  document.getElementById('pinInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') checkPin(); });
+  function lock(){
+    document.getElementById('dash').classList.remove('active');
+    document.getElementById('gate').style.display = 'flex';
+    document.getElementById('pinInput').value = '';
+    document.getElementById('gateError').style.display = 'none';
+  }
+
+  function showTab(name){
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById('panel-'+name).classList.add('active');
+  }
+
+  async function loadAspirants(){
+    document.getElementById('aspirant-rows').innerHTML = '<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+    try{
+      const res = await fetch(ASPIRANT_ENDPOINT);
+      aspirantData = await res.json();
+      populateFilter('f-a-state', aspirantData.map(a => a.state).filter(Boolean));
+      filterAspirants();
+    }catch(err){
+      document.getElementById('aspirant-rows').innerHTML = '<tr class="error-row"><td colspan="5">Could not load data. Make sure the Apps Script is deployed with "Anyone" access, then hit Refresh.</td></tr>';
+    }
+  }
+  async function loadMentors(){
+    document.getElementById('mentor-rows').innerHTML = '<tr class="loading-row"><td colspan="4">Loading...</td></tr>';
+    try{
+      const res = await fetch(MENTOR_ENDPOINT);
+      mentorData = await res.json();
+      populateFilter('f-m-college', mentorData.map(m => m.college === 'Other' ? m.collegeOther : m.college).filter(Boolean));
+      populateFilter('f-m-year', mentorData.map(m => m.year).filter(Boolean));
+      filterMentors();
+    }catch(err){
+      document.getElementById('mentor-rows').innerHTML = '<tr class="error-row"><td colspan="4">Could not load data. Make sure the Apps Script is deployed with "Anyone" access, then hit Refresh.</td></tr>';
+    }
+  }
+
+  function populateFilter(id, values){
+    const sel = document.getElementById(id);
+    const current = sel.value;
+    sel.innerHTML = sel.firstElementChild.outerHTML;
+    [...new Set(values)].forEach(v => { const o = document.createElement('option'); o.textContent = v; sel.appendChild(o); });
+    sel.value = current;
+  }
+
+  function renderAspirants(rows){
+    const tbody = document.getElementById('aspirant-rows');
+    document.getElementById('a-count').textContent = rows.length + ' response' + (rows.length===1?'':'s');
+    if (!rows.length){ tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No responses yet.</td></tr>'; return; }
+    tbody.innerHTML = rows.map((a,i) => `
+      <tr class="data-row" onclick="openAspirantDetail(${aspirantData.indexOf(a)})">
+        <td>${a.name||'—'}</td><td>${a.state||'—'}</td><td>${a.score||'—'}</td>
+        <td>${a.help||'—'}</td><td>${a.referenceId||'—'}</td>
+      </tr>`).join('');
+  }
+  function renderMentors(rows){
+    const tbody = document.getElementById('mentor-rows');
+    document.getElementById('m-count').textContent = rows.length + ' mentor' + (rows.length===1?'':'s');
+    if (!rows.length){ tbody.innerHTML = '<tr class="empty-row"><td colspan="4">No mentors yet.</td></tr>'; return; }
+    tbody.innerHTML = rows.map((m) => `
+      <tr class="data-row" onclick="openMentorDetail(${mentorData.indexOf(m)})">
+        <td>${m.name||'—'}</td><td>${(m.college==='Other'?m.collegeOther:m.college)||'—'}</td>
+        <td>${m.year||'—'}</td><td>${(m.gender==='Other'?m.genderOther:m.gender)||'—'}</td>
+      </tr>`).join('');
+  }
+
+  function filterAspirants(){
+    const state = document.getElementById('f-a-state').value;
+    const q = document.getElementById('f-a-search').value.toLowerCase();
+    renderAspirants(aspirantData.filter(a =>
+      (!state || a.state === state) &&
+      (!q || (a.name||'').toLowerCase().includes(q) || (a.email||'').toLowerCase().includes(q))
+    ));
+  }
+  function filterMentors(){
+    const college = document.getElementById('f-m-college').value;
+    const year = document.getElementById('f-m-year').value;
+    const q = document.getElementById('f-m-search').value.toLowerCase();
+    renderMentors(mentorData.filter(m => {
+      const mCollege = m.college === 'Other' ? m.collegeOther : m.college;
+      return (!college || mCollege === college) && (!year || m.year === year) &&
+        (!q || (m.name||'').toLowerCase().includes(q));
+    }));
+  }
+  document.getElementById('f-a-state').addEventListener('change', filterAspirants);
+  document.getElementById('f-a-search').addEventListener('input', filterAspirants);
+  document.getElementById('f-m-college').addEventListener('change', filterMentors);
+  document.getElementById('f-m-year').addEventListener('change', filterMentors);
+  document.getElementById('f-m-search').addEventListener('input', filterMentors);
+
+  const aspirantLabels = {
+    referenceId:'Reference ID', timestamp:'Submitted', email:'Email', name:'Full Name', whatsapp:'WhatsApp Number',
+    rank:'NEET UG Rank', score:'NEET Score', state:'Domicile State', category:'Category', help:'What They Need Help With',
+    otherSpecify:'Other (Specified)', collegesConsidering:'Colleges Considering', specificCollege:'Wants Specific College?',
+    whichCollege:'Which College', language:'Preferred Language', languageOther:'Language (Other)', mode:'Preferred Mode',
+    concerns:'Specific Questions / Concerns', firstAttempt:'First Attempt?', urgency:'Urgency', background:'Mentor Background Preference',
+    heard:'How They Heard About Bridgr'
+  };
+  const mentorLabels = {
+    referenceId:'Reference ID', timestamp:'Submitted', name:'Full Name', whatsapp:'WhatsApp Number', email:'Email',
+    gender:'Gender', genderOther:'Gender (Other)', college:'College', collegeOther:'College (Other)', year:'Current Year',
+    state:'State', languages:'Languages', languageOtherSpecify:'Language (Other)', areas:'Areas They Can Help With',
+    confidentArea:'Most Confident Area', helpCollege:'Willing to Help w/ College?', helpWhat:'What They Can Help With',
+    frequency:'Availability Frequency', modeInteraction:'Preferred Mode(s)', why:'Why Join Bridgr', expand:'Wants to Help Expand?',
+    knowOthers:'Knows Others Interested?', otherColleges:'Other Colleges Mentioned', experience:'Mentoring Experience (1-5)',
+    resources:'Digital Resources Comfortable With', motivation:'Primary Motivation', heard:'How They Heard About This Form'
+  };
+
+  function openDetail(record, labels, nameField, subField){
+    document.getElementById('modalName').textContent = record[nameField] || 'Unnamed';
+    document.getElementById('modalSub').textContent = record[subField] || '';
+    document.getElementById('modalBody').innerHTML = Object.keys(labels).map(key => {
+      const val = record[key];
+      if (val === undefined || val === '') return '';
+      return `<div class="detail-row"><div class="k">${labels[key]}</div><div class="v">${val}</div></div>`;
+    }).join('');
+    document.getElementById('modalBackdrop').classList.add('open');
+  }
+  function openAspirantDetail(i){ openDetail(aspirantData[i], aspirantLabels, 'name', 'referenceId'); }
+  function openMentorDetail(i){ openDetail(mentorData[i], mentorLabels, 'name', 'college'); }
+  function closeModal(){ document.getElementById('modalBackdrop').classList.remove('open'); }
+</script>
+</body>
+</html>
