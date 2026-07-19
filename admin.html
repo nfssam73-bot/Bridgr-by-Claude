@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Bridgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root{ --navy:#0B1026; --blue:#3B5EFF; --purple:#6C4FE0; --purple-2:#4A3AA8; --ink:#0B1026; --muted:#5B6480; --bg:#FAFAFC; --card:#FFFFFF; --line:#ECEBF4; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ font-family:'Inter', sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  h1,h2{ font-family:'Fraunces', serif; font-weight:500; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:900px; margin:0 auto; padding:0 20px; }
+
+  .gate{ min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, #0B1026, #241A4A, #4A3AA8); padding:20px; }
+  .gate-card{ background:#fff; border-radius:20px; padding:36px 28px; max-width:340px; width:100%; text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.3); }
+  .gate-card img{ height:44px; margin:0 auto 16px; border-radius:8px; }
+  .gate-card h1{ font-size:20px; margin-bottom:6px; }
+  .gate-card p{ color:var(--muted); font-size:13px; margin-bottom:22px; }
+  .pin-input{ width:100%; text-align:center; letter-spacing:0.4em; font-size:22px; padding:14px; border-radius:12px; border:1.5px solid var(--line); margin-bottom:14px; font-family:'Inter'; }
+  .pin-input:focus{ outline:none; border-color:var(--purple); }
+  .gate-btn{ width:100%; padding:14px; border-radius:12px; border:none; background:linear-gradient(135deg, var(--purple), var(--purple-2)); color:#fff; font-weight:600; cursor:pointer; }
+  .gate-error{ color:#E14B4B; font-size:12.5px; margin-top:10px; display:none; }
+
+  .dash{ display:none; min-height:100vh; }
+  .dash.active{ display:block; }
+  header{ padding:20px 0; border-bottom:1px solid var(--line); background:#fff; }
+  header nav{ display:flex; align-items:center; justify-content:space-between; }
+  .logo{ display:flex; align-items:center; gap:8px; }
+  .logo img{ height:26px; border-radius:6px; }
+  .logo span{ font-family:'Fraunces'; font-size:17px; }
+  .lock-btn{ font-size:12.5px; color:var(--muted); background:none; border:1px solid var(--line); padding:8px 14px; border-radius:999px; cursor:pointer; }
+
+  .dash-body{ padding:36px 0 60px; }
+  .dash-title{ font-size:24px; margin-bottom:6px; }
+  .dash-sub{ color:var(--muted); font-size:14px; margin-bottom:30px; }
+
+  .panel-grid{ display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:30px; }
+  .panel{ background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; }
+  .panel h3{ font-size:16px; font-family:'Inter'; font-weight:600; margin-bottom:6px; }
+  .panel p{ color:var(--muted); font-size:13px; line-height:1.6; margin-bottom:16px; }
+  .panel a.btn{ display:inline-block; padding:11px 18px; border-radius:10px; background:var(--blue); color:#fff; font-size:13.5px; font-weight:600; }
+  .panel .placeholder{ background:#FFF8E8; border:1px dashed #E8C97A; color:#8A6A1A; font-size:12.5px; padding:10px 14px; border-radius:10px; margin-bottom:14px; }
+
+  .note{ background:#F5F6FF; border:1px solid #DDE1FF; border-radius:16px; padding:20px; font-size:13px; color:var(--muted); line-height:1.7; }
+  .note b{ color:var(--ink); }
+
+  @media(min-width:760px){ .panel-grid{ grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <img src="logo.png" alt="Bridgr">
+    <h1>Admin Access</h1>
+    <p>Enter your PIN to continue.</p>
+    <input class="pin-input" id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
+    <button class="gate-btn" onclick="checkPin()">Unlock</button>
+    <p class="gate-error" id="gateError">Incorrect PIN. Try again.</p>
+  </div>
+</div>
+
+<div class="dash" id="dash">
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="index.html" class="logo"><img src="logo.png" alt="Bridgr"><span>Bridgr Admin</span></a>
+        <button class="lock-btn" onclick="lock()">Lock</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="dash-body">
+    <div class="wrap">
+      <h2 class="dash-title">Response Dashboard</h2>
+      <p class="dash-sub">Your Google Sheets are the source of truth — full search, sort, filter and export live there for free.</p>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <h3>Aspirant Responses</h3>
+          <div class="placeholder">Link not connected yet — send Vishu the aspirant Google Sheet URL to wire this up.</div>
+          <p>Every aspirant form submission (once live) lands here automatically.</p>
+          <a class="btn" href="#" id="aspirantSheetLink" target="_blank" rel="noreferrer">Open Sheet</a>
+        </div>
+        <div class="panel">
+          <h3>Mentor Applications</h3>
+          <div class="placeholder">Link not connected yet — send Vishu the mentor Google Sheet URL to wire this up.</div>
+          <p>Every mentor application (once live) lands here automatically.</p>
+          <a class="btn" href="#" id="mentorSheetLink" target="_blank" rel="noreferrer">Open Sheet</a>
+        </div>
+      </div>
+
+      <div class="note">
+        <b>How this works:</b> this PIN gate is a simple front-door — good enough for a free MVP, but not bank-grade security since the check happens in the browser. The real protection is that your Google Sheets themselves are private and only open in a browser logged into your own Google account.<br><br>
+        <b>To finish wiring this page:</b> send over the two "View in Sheets" links from your aspirant and mentor Google Forms' Responses tabs, and the two buttons above will open them directly.<br><br>
+        <b>Changing the PIN:</b> just tell me the new one, anytime.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CORRECT_PIN = "1408";
+  function checkPin(){
+    const val = document.getElementById('pinInput').value;
+    if (val === CORRECT_PIN){
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dash').classList.add('active');
+    } else {
+      document.getElementById('gateError').style.display = 'block';
+      document.getElementById('pinInput').value = '';
+    }
+  }
+  document.getElementById('pinInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') checkPin();
+  });
+  function lock(){
+    document.getElementById('dash').classList.remove('active');
+    document.getElementById('gate').style.display = 'flex';
+    document.getElementById('pinInput').value = '';
+    document.getElementById('gateError').style.display = 'none';
+  }
+</script>
+</body>
+</html>
