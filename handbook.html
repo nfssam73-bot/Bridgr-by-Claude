@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Counselling Handbook — Bridgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root{
+    --navy:#0B1026; --blue:#4C7FDB; --blue-light:#8FB8F5; --blue-deep:#2C4E9E;
+    --ink:#0B1026; --muted:#5B6480; --bg:#FAFAFC; --card:#FFFFFF; --line:#ECEBF4; --green:#25D366;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{ font-family:'Inter', sans-serif; background:var(--navy); color:#fff; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:500; }
+  a{ text-decoration:none; color:inherit; }
+  img{ max-width:100%; display:block; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 20px; }
+  .reveal{ opacity:0; transform:translateY(18px); filter:blur(3px); transition:opacity .6s ease, transform .6s ease, filter .6s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); filter:blur(0); }
+
+  header{ position:fixed; top:0; left:0; right:0; z-index:50; transition:all .3s ease; padding:18px 0; }
+  header.scrolled{ background:rgba(11,16,38,0.75); backdrop-filter:blur(12px); padding:12px 0; box-shadow:0 1px 0 rgba(255,255,255,0.06); }
+  nav{ display:flex; align-items:center; justify-content:space-between; }
+  .logo{ display:flex; align-items:center; gap:8px; }
+  .logo img{ height:30px; width:auto; border-radius:6px; }
+  .logo span{ font-family:'Fraunces', serif; color:#fff; font-size:20px; }
+  .nav-links{ display:flex; gap:32px; }
+  .nav-links a{ color:#D7DAF0; font-size:14px; }
+  .nav-links a.active{ color:#fff; font-weight:600; }
+  .menu-btn{ display:none; background:none; border:none; color:#fff; font-size:22px; cursor:pointer; }
+  .mobile-menu{ display:none; flex-direction:column; gap:16px; padding:16px 20px 20px; background:rgba(11,16,38,0.97); }
+  .mobile-menu.open{ display:flex; }
+  .mobile-menu a{ color:#D7DAF0; font-size:15px; }
+
+  .hb-hero{ position:relative; padding:120px 0 40px; text-align:center;
+    background:linear-gradient(180deg, #0B1026 0%, #142057 25%, #1E3A78 48%, #33579E 68%, #5B7FC4 88%, #A88F8A 100%);
+    overflow:hidden;
+  }
+  .eyebrow{ display:inline-block; font-size:12px; letter-spacing:.04em; color:#C9E0FA; background:rgba(111,177,255,0.2); border:1px solid rgba(111,177,255,0.4); padding:6px 14px; border-radius:999px; margin-bottom:18px; }
+  .hb-hero h1{ font-size:clamp(26px, 5.5vw, 40px); line-height:1.2; max-width:640px; margin:0 auto 14px; color:#fff; }
+  .hb-hero p{ color:#DCE7FA; font-size:15px; max-width:460px; margin:0 auto; line-height:1.6; }
+
+  .hb-viewer-section{
+    background:linear-gradient(180deg, #A88F8A 0%, #C9A382 8%, #EAF2FF 22%, #FAFAFC 40%, #F5F9FF 100%);
+    padding:40px 0 70px;
+  }
+  .hb-pages{ max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:26px; }
+  .hb-page{
+    border-radius:14px; overflow:hidden;
+    box-shadow:0 24px 54px rgba(11,16,38,0.22);
+    border:1px solid rgba(11,16,38,0.06);
+    background:#fff;
+    line-height:0;
+  }
+  .hb-page img{ display:block; width:100%; height:auto; }
+  .hb-actions{ display:flex; justify-content:center; gap:12px; margin-top:38px; flex-wrap:wrap; }
+  .btn{ display:inline-block; text-align:center; padding:13px 22px; border-radius:12px; font-weight:600; font-size:14.5px; cursor:pointer; border:none; transition:transform .2s ease, box-shadow .2s ease, background .2s ease; }
+  .btn-primary{ background:var(--blue); color:#fff; box-shadow:0 10px 24px rgba(47,111,237,0.35); }
+  .btn-primary:hover{ background:var(--blue-light); transform:translateY(-2px); }
+  .btn-outline{ background:#fff; color:var(--ink); border:1.5px solid var(--line); }
+  .btn-outline:hover{ transform:translateY(-2px); }
+  .hb-note{ text-align:center; color:var(--muted); font-size:12.5px; margin-top:16px; max-width:480px; margin-left:auto; margin-right:auto; }
+
+  footer{ background:var(--navy); color:#8A92BE; padding:32px 0; text-align:center; font-size:12px; }
+  footer img{ height:34px; margin:0 auto 10px; border-radius:6px; }
+  footer .flinks{ display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-top:12px; }
+  footer .flinks a{ color:#B9C0E8; }
+
+  .wa-float{ position:fixed; bottom:22px; right:22px; z-index:40; width:52px; height:52px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 24px rgba(37,211,102,0.4); }
+
+  @media(min-width:760px){
+    .nav-links{ display:flex; } .menu-btn{ display:none; }
+  }
+  @media(max-width:759px){ .nav-links{ display:none; } .menu-btn{ display:block; } }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="wrap">
+    <nav>
+      <a href="index.html" class="logo"><img src="logo.png" alt="Bridgr"><span>Bridgr</span></a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="aspirants.html">Aspirants</a>
+        <a href="mentor.html">Mentors</a>
+        <a href="about.html">About Us</a>
+        <a href="handbook.html" class="active">Handbook</a>
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    </nav>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="aspirants.html">Aspirants</a>
+    <a href="mentor.html">Mentors</a>
+    <a href="about.html">About Us</a>
+    <a href="handbook.html">Handbook</a>
+  </div>
+</header>
+
+<section class="hb-hero">
+  <div class="wrap">
+    <span class="eyebrow reveal in">BRIDGR PRESENTS</span>
+    <h1 class="reveal in">The Counselling Handbook</h1>
+    <p class="reveal in">A NEET UG student's field guide — from the moment your result drops to the day you walk into your medical college.</p>
+  </div>
+</section>
+
+<section class="hb-viewer-section">
+  <div class="wrap">
+    <div class="hb-pages">
+      <div class="hb-page reveal in"><img src="handbook-pages/page-01.jpg" alt="Handbook page 1" loading="eager"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-02.jpg" alt="Handbook page 2" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-03.jpg" alt="Handbook page 3" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-04.jpg" alt="Handbook page 4" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-05.jpg" alt="Handbook page 5" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-06.jpg" alt="Handbook page 6" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-07.jpg" alt="Handbook page 7" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-08.jpg" alt="Handbook page 8" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-09.jpg" alt="Handbook page 9" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-10.jpg" alt="Handbook page 10" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-11.jpg" alt="Handbook page 11" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-12.jpg" alt="Handbook page 12" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-13.jpg" alt="Handbook page 13" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-14.jpg" alt="Handbook page 14" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-15.jpg" alt="Handbook page 15" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-16.jpg" alt="Handbook page 16" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-17.jpg" alt="Handbook page 17" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-18.jpg" alt="Handbook page 18" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-19.jpg" alt="Handbook page 19" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-20.jpg" alt="Handbook page 20" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-21.jpg" alt="Handbook page 21" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-22.jpg" alt="Handbook page 22" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-23.jpg" alt="Handbook page 23" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-24.jpg" alt="Handbook page 24" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-25.jpg" alt="Handbook page 25" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-26.jpg" alt="Handbook page 26" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-27.jpg" alt="Handbook page 27" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-28.jpg" alt="Handbook page 28" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-29.jpg" alt="Handbook page 29" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-30.jpg" alt="Handbook page 30" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-31.jpg" alt="Handbook page 31" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-32.jpg" alt="Handbook page 32" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-33.jpg" alt="Handbook page 33" loading="lazy"></div>
+      <div class="hb-page reveal in"><img src="handbook-pages/page-34.jpg" alt="Handbook page 34" loading="lazy"></div>
+    </div>
+    <div class="hb-actions">
+      <a class="btn btn-primary" href="handbook.pdf" target="_blank" rel="noreferrer">Open Full PDF</a>
+      <a class="btn btn-outline" href="handbook.pdf" download>Download PDF</a>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="wrap">
+    <img src="logo.png" alt="Bridgr">
+    <p>© 2026 Bridgr. All rights reserved.</p>
+    <div class="flinks">
+      <a href="https://wa.me/919353777094" target="_blank" rel="noreferrer">WhatsApp</a>
+      <a href="about.html">About Us</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms &amp; Conditions</a>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/919353777094" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3.1.8.8-3-.2-.3A8 8 0 1 1 12 20Zm4.4-6c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-1.3-.6-2.1-1.1-2.9-2.5-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5C10.4 9 10 8 9.8 7.6c-.1-.4-.3-.3-.5-.3h-.4c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.2.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3Z"/></svg>
+</a>
+
+<script>
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 20));
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+</script>
+</body>
+</html>
